@@ -33,4 +33,4 @@ This will be our background
 
 <h1>What did we do, and Whats in Progress?</h1>
 
-As of right now, we have the sprite sheet of one car, and an NPC that if you talk to starts the race, and the background of our game. We are still working on coding the game, and making the sprite sheet of the other car.
+As of right now, we have the sprite sheet of the cars, and an NPC that if you talk to starts the race, and the background of our game. We are still working on coding the game.
