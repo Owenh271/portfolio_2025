@@ -20,7 +20,6 @@ This will be one of the cars
 
 This will be our other
 
-![Adobe Express - file (2)](https://github.com/user-attachments/assets/b8300f58-3b3c-4c64-80aa-2d2ef9e1bebc)
 
 <h1>Background</h1>
 
