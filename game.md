@@ -22,8 +22,6 @@ This will be our other
 
 ![Adobe Express - file (2)](https://github.com/user-attachments/assets/b8300f58-3b3c-4c64-80aa-2d2ef9e1bebc)
 
-<img src="blob:chrome-untrusted://media-app/630b6f70-d6e2-4285-9c69-03e8d0a2abc6" alt="Adobe Express - file (3).png"/>![image](https://github.com/user-attachments/assets/4836f884-30fa-4081-8f07-1b47705d7cd5)
-
 <h1>Background</h1>
 
 <img src="https://art.pixilart.com/6e83f4431d6c68c.gif" alt="Editing racetrack minecraft - Free online pixel art drawing tool - Pixilart" width="500" height="400">
