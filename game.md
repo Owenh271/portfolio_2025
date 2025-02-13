@@ -19,7 +19,8 @@ This will be one of the cars
 
 <h1>Background</h1>
 
-![image](https://github.com/user-attachments/assets/fc7461fa-f31c-474c-9321-00c559117168)
+![image](https://github.com/user-attachments/assets/86c18b62-33a2-4f7b-a783-531b67e6e0c7)
+
 
 This will be our background
 
