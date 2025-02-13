@@ -18,7 +18,7 @@ In this flow chart, we have background, players, and game mechanics, that can he
 
 This will be one of the cars
 
-<img src="blob:chrome-untrusted://media-app/630b6f70-d6e2-4285-9c69-03e8d0a2abc6" alt="Adobe Express - file (3).png"/>![Uploading image.png…]()
+![Adobe Express - file (3)](https://github.com/user-attachments/assets/79b8ff58-9311-446b-9be7-620cb13cbdc0)
 
 <h1>Background</h1>
 
