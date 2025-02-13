@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/2a4fd0de-3f3e-4758-b274-fea06fd0aa82)<h1>Game Objective</h1>
+<h1>Game Objective</h1>
 
 Our game is about racing. You will be in a car and your objective is to drive around the map and finish faster than your friend in another car. The game will try to be as realistic as possible so that you won't have any buffs, or debuffs, just pure racing. 
 
@@ -24,7 +24,7 @@ This will be our other
 
 <h1>Background</h1>
 
-![image](https://github.com/user-attachments/assets/86c18b62-33a2-4f7b-a783-531b67e6e0c7)
+<img src="https://art.pixilart.com/6e83f4431d6c68c.gif" alt="Editing racetrack minecraft - Free online pixel art drawing tool - Pixilart" width="300" height="200">
 
 
 This will be our background
