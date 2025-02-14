@@ -5,7 +5,8 @@ Our game is about racing. You will be in a car and your objective is to drive ar
 <h1>Ideation Diagram</h1>
 
 This is Our Flow Chart
-![image](https://github.com/user-attachments/assets/0f605565-1557-4b77-8d99-f98e10de1802)
+![image](https://github.com/user-attachments/assets/2628ceff-878a-4446-8644-cc63eb17c15b)
+
 
 
 In this flow chart, we have background, players, and game mechanics, that can help build our game. There will be two cars, one will be controlled by you using WASD, and the other car can be controlled by someone else using the arrow keys. The cars will be different colors to differentiate between you and the other player. Our background will be a simple race track. You will start the race by talking to out Race driver NPC.
