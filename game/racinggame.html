@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move with WASD</title>
+    <style>
+        canvas {
+            background: white;
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+
+    <script>
+        // Set up canvas
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Object properties
+        let objSize = 50;
+        let objX = canvas.width / 2 - objSize / 2;
+        let objY = canvas.height / 2 - objSize / 2;
+        let speed = 5;
+
+        // Key press tracking
+        let keys = {};
+
+        window.addEventListener("keydown", (e) => keys[e.key] = true);
+        window.addEventListener("keyup", (e) => keys[e.key] = false);
+
+        function update() {
+            // Movement logic
+            if (keys["a"]) objX -= speed; // Left
+            if (keys["d"]) objX += speed; // Right
+            if (keys["w"]) objY -= speed; // Up
+            if (keys["s"]) objY += speed; // Down
+
+            // Prevent going out of bounds
+            objX = Math.max(0, Math.min(canvas.width - objSize, objX));
+            objY = Math.max(0, Math.min(canvas.height - objSize, objY));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "blue";
+            ctx.fillRect(objX, objY, objSize, objSize);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop(); // Start the game loop
+    </script>
+</body>
+</html>
