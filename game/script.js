@@ -6,7 +6,7 @@ canvas.height = 600;
 
 // Load the car image
 const carImage = new Image();
-carImage.src = 'image.png'; // Make sure the image is in the same directory as your HTML/JS file
+carImage.src = 'car.png'; // Correct image file name
 
 let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
 let player2 = { x: 20, y: (canvas.height / 2), width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
