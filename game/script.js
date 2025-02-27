@@ -4,9 +4,11 @@ document.body.appendChild(canvas);
 canvas.width = 1200;
 canvas.height = 600;
 
-// Load the car image
-const carImage = new Image();
-carImage.src = 'car.png'; // Correct image file name
+// Load the car images
+const carImage1 = new Image();
+const carImage2 = new Image();
+carImage1.src = 'car.png'; // Player 1's car image
+carImage2.src = 'car2.png'; // Player 2's car image
 
 let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
 let player2 = { x: 20, y: (canvas.height / 2), width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
@@ -33,13 +35,13 @@ function createObstacles() {
 }
 
 // Draw a rotated car with an image
-function drawCar(car, color) {
+function drawCar(car, image) {
     ctx.save();
     ctx.translate(car.x + car.width / 2, car.y + car.height / 2);
     ctx.rotate(car.angle);
     
     // Draw the car image
-    ctx.drawImage(carImage, -car.width / 2, -car.height / 2, car.width, car.height); // Adjust the car size to fit the carImage
+    ctx.drawImage(image, -car.width / 2, -car.height / 2, car.width, car.height); // Adjust the car size to fit the carImage
 
     ctx.restore();
 }
@@ -106,7 +108,7 @@ function checkCollision(car) {
 }
 
 // Update car movement and rotation
-function updateCar(car, controls) {
+function updateCar(car, controls, image) {
     if (car.penaltyTime > 0) car.penaltyTime--;
 
     if (keys[controls.left]) car.angle -= 0.05;
@@ -147,12 +149,15 @@ function updateCar(car, controls) {
     } else if (car.penaltyTime === 0) {
         car.speed = 5;
     }
+
+    // Draw the car with the correct image
+    drawCar(car, image);
 }
 
 // Game update function
 function update() {
-    updateCar(player1, { left: "a", right: "d", forward: "w", backward: "s" });
-    updateCar(player2, { left: "j", right: "l", forward: "i", backward: "k" });
+    updateCar(player1, { left: "a", right: "d", forward: "w", backward: "s" }, carImage1);
+    updateCar(player2, { left: "j", right: "l", forward: "i", backward: "k" }, carImage2);
 
     // Check for finish line (smaller hitbox on x, larger on y)
     let finishLineTop = finishLineY;
@@ -201,8 +206,6 @@ function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBorders(); // Draw the track's borders
-    drawCar(player1, "blue");
-    drawCar(player2, "red");
 
     // Draw the updated finish line with more central positioning on the Y-axis
     ctx.fillStyle = "black";
@@ -216,7 +219,9 @@ function gameLoop() {
 
 createObstacles();
 
-// Ensure the image is loaded before starting the game loop
-carImage.onload = function() {
-    gameLoop();
+// Ensure the images are loaded before starting the game loop
+carImage1.onload = function() {
+    carImage2.onload = function() {
+        gameLoop();
+    };
 };
