@@ -10,22 +10,26 @@ const carImage2 = new Image();
 carImage1.src = 'car.png'; // Player 1's car image
 carImage2.src = 'car2.png'; // Player 2's car image
 
-let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
-let player2 = { x: 20, y: (canvas.height / 2), width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
+// Load the obstacle image (mud)
+const mudImage = new Image();
+mudImage.src = 'mud.png'; // Mud image for obstacles
+
+let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 90, height: 40, speed: 5, angle: 0, penaltyTime: 0 };  // Player 1 made wider
+let player2 = { x: 20, y: (canvas.height / 2), width: 70, height: 40, speed: 5, angle: 0, penaltyTime: 0 };  // Player 2 remains the same
 
 let finishLineWidth = 15;
 let finishLineHeight = 70;
 
-// Set finish line closer to the right border
-let finishLineX = canvas.width - 200; // Move finish line 200px away from the right border
-let finishLineY = (canvas.height - finishLineHeight) / 2; // Center finish line on Y-axis
+// Randomize finish line position within canvas constraints
+let finishLineX = Math.random() * (canvas.width - finishLineWidth - 200) + 200; // Ensure it's not too close to the right edge
+let finishLineY = Math.random() * (canvas.height - finishLineHeight); // Ensure it's within the canvas height
 
 let obstacles = [];
 
-// Generate obstacles
+// Generate more obstacles (now 15 obstacles instead of 8)
 function createObstacles() {
     obstacles = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 15; i++) {  // Changed to 15 obstacles
         let width = Math.random() * 50 + 30;
         let height = Math.random() * 30 + 20;
         let x = Math.random() * (canvas.width - width);
@@ -46,11 +50,11 @@ function drawCar(car, image) {
     ctx.restore();
 }
 
-// Draw obstacles
+// Draw obstacles (using the mud image)
 function drawObstacles() {
-    ctx.fillStyle = "green";
     obstacles.forEach(obstacle => {
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        // Draw the mud image at the obstacle's location and with its width and height
+        ctx.drawImage(mudImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 }
 
@@ -193,6 +197,9 @@ function resetGame() {
     player2.y = (canvas.height / 2);
     player2.angle = 0;
     createObstacles();
+    // Randomize finish line position again on reset
+    finishLineX = Math.random() * (canvas.width - finishLineWidth - 200) + 200;
+    finishLineY = Math.random() * (canvas.height - finishLineHeight);
     keys = {};
 }
 
@@ -217,11 +224,12 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-createObstacles();
-
 // Ensure the images are loaded before starting the game loop
 carImage1.onload = function() {
     carImage2.onload = function() {
-        gameLoop();
+        mudImage.onload = function() {
+            createObstacles(); // Create obstacles only after all images are loaded
+            gameLoop();
+        };
     };
 };
