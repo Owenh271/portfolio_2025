@@ -4,6 +4,10 @@ document.body.appendChild(canvas);
 canvas.width = 1200;
 canvas.height = 600;
 
+// Load the car image
+const carImage = new Image();
+carImage.src = 'image.png'; // Make sure the image is in the same directory as your HTML/JS file
+
 let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
 let player2 = { x: 20, y: (canvas.height / 2), width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
 
@@ -28,13 +32,15 @@ function createObstacles() {
     }
 }
 
-// Draw a rotated car
+// Draw a rotated car with an image
 function drawCar(car, color) {
     ctx.save();
     ctx.translate(car.x + car.width / 2, car.y + car.height / 2);
     ctx.rotate(car.angle);
-    ctx.fillStyle = color;
-    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+    
+    // Draw the car image
+    ctx.drawImage(carImage, -car.width / 2, -car.height / 2, car.width, car.height); // Adjust the car size to fit the carImage
+
     ctx.restore();
 }
 
@@ -209,4 +215,8 @@ function gameLoop() {
 }
 
 createObstacles();
-gameLoop();
+
+// Ensure the image is loaded before starting the game loop
+carImage.onload = function() {
+    gameLoop();
+};
