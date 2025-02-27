@@ -1,21 +1,22 @@
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
-canvas.width = 1200; // Increased canvas width
-canvas.height = 600; // Increased canvas height
+canvas.width = 1200;
+canvas.height = 600;
 
-let player1 = { x: 50, y: 150, width: 50, height: 30, speed: 5, penaltyTime: 0 };
-let player2 = { x: 50, y: 250, width: 50, height: 30, speed: 5, penaltyTime: 0 };
-let finishLineX = 1000; // Position of the finish line
-let finishLineWidth = 30; // Smaller width for the finish line hitbox
-let finishLineHeight = 100; // Increased height for the finish line hitbox (a bit bigger on the Y-axis)
+let player1 = { x: 200, y: 300, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
+let player2 = { x: 200, y: 350, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
+
+let finishLineX = 1000;
+let finishLineWidth = 30;
+let finishLineHeight = 100;
 
 let obstacles = [];
 
-// Generate obstacles at random positions within the new canvas size
+// Generate obstacles
 function createObstacles() {
     obstacles = [];
-    for (let i = 0; i < 8; i++) { // Increased the number of obstacles for a bigger map
+    for (let i = 0; i < 8; i++) {
         let width = Math.random() * 50 + 30;
         let height = Math.random() * 30 + 20;
         let x = Math.random() * (canvas.width - width);
@@ -24,11 +25,17 @@ function createObstacles() {
     }
 }
 
+// Draw a rotated car
 function drawCar(car, color) {
+    ctx.save();
+    ctx.translate(car.x + car.width / 2, car.y + car.height / 2);
+    ctx.rotate(car.angle);
     ctx.fillStyle = color;
-    ctx.fillRect(car.x, car.y, car.width, car.height);
+    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+    ctx.restore();
 }
 
+// Draw obstacles
 function drawObstacles() {
     ctx.fillStyle = "green";
     obstacles.forEach(obstacle => {
@@ -36,6 +43,7 @@ function drawObstacles() {
     });
 }
 
+// Collision detection
 function checkCollision(car) {
     for (let i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
@@ -45,88 +53,85 @@ function checkCollision(car) {
             car.y < obstacle.y + obstacle.height &&
             car.y + car.height > obstacle.y
         ) {
-            return true; // Collision detected
+            return true;
         }
     }
     return false;
 }
 
+// Update car movement and rotation
+function updateCar(car, controls) {
+    if (car.penaltyTime > 0) car.penaltyTime--;
+
+    if (keys[controls.left]) car.angle -= 0.05;
+    if (keys[controls.right]) car.angle += 0.05;
+
+    if (keys[controls.forward]) {
+        car.x += Math.cos(car.angle) * car.speed;
+        car.y += Math.sin(car.angle) * car.speed;
+    }
+    if (keys[controls.backward]) {
+        car.x -= Math.cos(car.angle) * car.speed;
+        car.y -= Math.sin(car.angle) * car.speed;
+    }
+
+    // Check for collisions
+    if (checkCollision(car) && car.penaltyTime === 0) {
+        car.penaltyTime = 60;
+        car.speed = 2;
+    } else if (car.penaltyTime === 0) {
+        car.speed = 5;
+    }
+}
+
+// Game update function
 function update() {
-    // Apply penalty if the car has hit an obstacle
-    if (player1.penaltyTime > 0) player1.penaltyTime--;
-    if (player2.penaltyTime > 0) player2.penaltyTime--;
+    updateCar(player1, { left: "a", right: "d", forward: "w", backward: "s" });
+    updateCar(player2, { left: "j", right: "l", forward: "i", backward: "k" });
 
-    // If not penalized, move normally
-    if (keys["d"] && player1.x + player1.width < canvas.width) player1.x += player1.speed;
-    if (keys["a"] && player1.x > 0) player1.x -= player1.speed;
-    if (keys["w"] && player1.y > 0) player1.y -= player1.speed;
-    if (keys["s"] && player1.y + player1.height < canvas.height) player1.y += player1.speed;
-
-    if (keys["l"] && player2.x + player2.width < canvas.width) player2.x += player2.speed;
-    if (keys["j"] && player2.x > 0) player2.x -= player2.speed;
-    if (keys["i"] && player2.y > 0) player2.y -= player2.speed;
-    if (keys["k"] && player2.y + player2.height < canvas.height) player2.y += player2.speed;
-
-    // Check for collisions with obstacles
-    if (checkCollision(player1) && player1.penaltyTime === 0) {
-        player1.penaltyTime = 60; // 60 frames of penalty (1 second)
-        player1.speed = 2; // Decrease speed when hitting an obstacle
-    }
-    if (checkCollision(player2) && player2.penaltyTime === 0) {
-        player2.penaltyTime = 60; // 60 frames of penalty (1 second)
-        player2.speed = 2; // Decrease speed when hitting an obstacle
-    }
-
-    // Reset speed after penalty time expires
-    if (player1.penaltyTime === 0) player1.speed = 5;
-    if (player2.penaltyTime === 0) player2.speed = 5;
-
-    // Check for finish line (slightly bigger Y-axis hitbox)
-    if (
-        player1.x + player1.width >= finishLineX && 
-        player1.x <= finishLineX + finishLineWidth &&
-        player1.y + player1.height / 2 >= (canvas.height - finishLineHeight) / 2 && 
-        player1.y + player1.height / 2 <= (canvas.height + finishLineHeight) / 2
-    ) {
+    // Check for finish line
+    if (player1.x + player1.width >= finishLineX) {
         alert("Player 1 Wins!");
         resetGame();
     }
-
-    if (
-        player2.x + player2.width >= finishLineX && 
-        player2.x <= finishLineX + finishLineWidth &&
-        player2.y + player2.height / 2 >= (canvas.height - finishLineHeight) / 2 && 
-        player2.y + player2.height / 2 <= (canvas.height + finishLineHeight) / 2
-    ) {
+    if (player2.x + player2.width >= finishLineX) {
         alert("Player 2 Wins!");
         resetGame();
     }
 }
 
+// Reset game state
 function resetGame() {
-    player1.x = 50;
-    player1.y = 150;
-    player2.x = 50;
-    player2.y = 250;
-    createObstacles(); // Regenerate obstacles after reset
-    keys = {}; // Clear key states to prevent automatic movement
+    player1.x = 200;
+    player1.y = 300;
+    player1.angle = 0;
+    player2.x = 200;
+    player2.y = 350;
+    player2.angle = 0;
+    createObstacles();
+    keys = {};
 }
 
+// Key event listeners
 let keys = {};
 window.addEventListener("keydown", (e) => (keys[e.key] = true));
 window.addEventListener("keyup", (e) => (keys[e.key] = false));
 
+// Game loop
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     drawCar(player1, "blue");
     drawCar(player2, "red");
+
     ctx.fillStyle = "black";
-    // Draw the bigger finish line (larger Y-axis hitbox)
     ctx.fillRect(finishLineX, (canvas.height - finishLineHeight) / 2, finishLineWidth, finishLineHeight);
-    drawObstacles(); // Draw obstacles
+
+    drawObstacles();
     update();
+
     requestAnimationFrame(gameLoop);
 }
 
-createObstacles(); // Initial obstacle setup
+createObstacles();
 gameLoop();
