@@ -4,12 +4,15 @@ document.body.appendChild(canvas);
 canvas.width = 1200;
 canvas.height = 600;
 
-let player1 = { x: 200, y: 300, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
-let player2 = { x: 200, y: 350, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
+let player1 = { x: 20, y: (canvas.height / 2) - 50, width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
+let player2 = { x: 20, y: (canvas.height / 2), width: 50, height: 30, speed: 5, angle: 0, penaltyTime: 0 };
 
-let finishLineX = 1000;
-let finishLineWidth = 30;
-let finishLineHeight = 100;
+let finishLineWidth = 15;
+let finishLineHeight = 70;
+
+// Set finish line closer to the right border
+let finishLineX = canvas.width - 200; // Move finish line 200px away from the right border
+let finishLineY = (canvas.height - finishLineHeight) / 2; // Center finish line on Y-axis
 
 let obstacles = [];
 
@@ -43,8 +46,45 @@ function drawObstacles() {
     });
 }
 
-// Collision detection
+// Draw borders
+function drawBorders() {
+    ctx.fillStyle = "black";
+    // Draw the racetrack boundaries (you can adjust the track's shape and size)
+    ctx.lineWidth = 10;
+
+    // Track left side
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, canvas.height);
+    ctx.stroke();
+
+    // Track right side
+    ctx.beginPath();
+    ctx.moveTo(canvas.width, 0);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.stroke();
+
+    // Track top side
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(canvas.width, 0);
+    ctx.stroke();
+
+    // Track bottom side
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.stroke();
+}
+
+// Collision detection with track borders
 function checkCollision(car) {
+    // Check if car goes outside the track area (borders)
+    if (car.x <= 10 || car.x + car.width >= canvas.width - 10 || car.y <= 10 || car.y + car.height >= canvas.height - 10) {
+        return true; // Collision with border
+    }
+    
+    // Check for obstacles
     for (let i = 0; i < obstacles.length; i++) {
         let obstacle = obstacles[i];
         if (
@@ -53,7 +93,7 @@ function checkCollision(car) {
             car.y < obstacle.y + obstacle.height &&
             car.y + car.height > obstacle.y
         ) {
-            return true;
+            return true; // Collision with obstacle
         }
     }
     return false;
@@ -67,12 +107,31 @@ function updateCar(car, controls) {
     if (keys[controls.right]) car.angle += 0.05;
 
     if (keys[controls.forward]) {
-        car.x += Math.cos(car.angle) * car.speed;
-        car.y += Math.sin(car.angle) * car.speed;
+        let newX = car.x + Math.cos(car.angle) * car.speed;
+        let newY = car.y + Math.sin(car.angle) * car.speed;
+
+        // Prevent moving outside the track (borders)
+        if (newX > 10 && newX + car.width < canvas.width - 10) {
+            car.x = newX;
+        }
+
+        if (newY > 10 && newY + car.height < canvas.height - 10) {
+            car.y = newY;
+        }
     }
+
     if (keys[controls.backward]) {
-        car.x -= Math.cos(car.angle) * car.speed;
-        car.y -= Math.sin(car.angle) * car.speed;
+        let newX = car.x - Math.cos(car.angle) * (car.speed / 2); // Move slower by halving the speed
+        let newY = car.y - Math.sin(car.angle) * (car.speed / 2); // Move slower by halving the speed
+
+        // Prevent moving outside the track (borders)
+        if (newX > 10 && newX + car.width < canvas.width - 10) {
+            car.x = newX;
+        }
+
+        if (newY > 10 && newY + car.height < canvas.height - 10) {
+            car.y = newY;
+        }
     }
 
     // Check for collisions
@@ -89,12 +148,26 @@ function update() {
     updateCar(player1, { left: "a", right: "d", forward: "w", backward: "s" });
     updateCar(player2, { left: "j", right: "l", forward: "i", backward: "k" });
 
-    // Check for finish line
-    if (player1.x + player1.width >= finishLineX) {
+    // Check for finish line (smaller hitbox on x, larger on y)
+    let finishLineTop = finishLineY;
+    let finishLineBottom = finishLineTop + finishLineHeight;
+
+    // Check if players cross the finish line within the updated hitbox
+    if (
+        player1.x + player1.width >= finishLineX && 
+        player1.x <= finishLineX + finishLineWidth &&
+        player1.y + player1.height >= finishLineTop && 
+        player1.y <= finishLineBottom
+    ) {
         alert("Player 1 Wins!");
         resetGame();
     }
-    if (player2.x + player2.width >= finishLineX) {
+    if (
+        player2.x + player2.width >= finishLineX && 
+        player2.x <= finishLineX + finishLineWidth &&
+        player2.y + player2.height >= finishLineTop && 
+        player2.y <= finishLineBottom
+    ) {
         alert("Player 2 Wins!");
         resetGame();
     }
@@ -102,11 +175,11 @@ function update() {
 
 // Reset game state
 function resetGame() {
-    player1.x = 200;
-    player1.y = 300;
+    player1.x = 20; // Start at left border
+    player1.y = (canvas.height / 2) - 50;
     player1.angle = 0;
-    player2.x = 200;
-    player2.y = 350;
+    player2.x = 20; // Start at left border
+    player2.y = (canvas.height / 2);
     player2.angle = 0;
     createObstacles();
     keys = {};
@@ -121,11 +194,13 @@ window.addEventListener("keyup", (e) => (keys[e.key] = false));
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    drawBorders(); // Draw the track's borders
     drawCar(player1, "blue");
     drawCar(player2, "red");
 
+    // Draw the updated finish line with more central positioning on the Y-axis
     ctx.fillStyle = "black";
-    ctx.fillRect(finishLineX, (canvas.height - finishLineHeight) / 2, finishLineWidth, finishLineHeight);
+    ctx.fillRect(finishLineX, finishLineY, finishLineWidth, finishLineHeight);
 
     drawObstacles();
     update();
